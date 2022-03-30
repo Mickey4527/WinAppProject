@@ -3,7 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package WinApp;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 /**
  *
@@ -21,6 +26,40 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
     }
 
+    public Connection getMySqlConnection()
+    {
+        /* Declare and initialize a sql Connection variable. */
+        Connection ret = null;
+        
+        try
+        {
+        
+            /* Register for jdbc driver class. */
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            
+            /* Create connection url. */
+            String mysqlConnUrl = "jdbc:mysql://localhost:3306/test";
+            
+            /* db user name. */
+            String mysqlUserName = "root";
+            
+            /* db password. */
+            String mysqlPassword = "";
+            
+            /* Get the Connection object. */
+            ret = DriverManager.getConnection(mysqlConnUrl, mysqlUserName , mysqlPassword);
+            
+           
+   
+        }catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }finally
+        {
+            return ret;
+        }
+    }
+     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,8 +77,8 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         spnQua = new javax.swing.JSpinner();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtCompany = new javax.swing.JTextField();
+        txtProductName = new javax.swing.JTextField();
         txtPrice = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -67,8 +106,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        btnSave.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-        btnSave.setText(" Add ");
+        btnSave.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        btnSave.setText("บันทึกข้อมูล");
         btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnSaveMouseClicked(evt);
@@ -83,26 +122,27 @@ public class MainFrame extends javax.swing.JFrame {
         jTable1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Name", "Type", "ราคา", "Weight", "Company", "วันที่ผลิต"
+                "วันที่บันทึก", "ประเภทสินค้า", "ชื่อสินค้า", "ยี่ห้อ", "หน่วยนับ", "จำนวนสินค้า", "ราคา", "หมายเหตุ"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.Integer.class, java.lang.String.class, java.lang.Object.class
+                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Float.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
+        jTable1.setEnabled(false);
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(6).setResizable(false);
         }
         jTable1.getTableHeader().setFont(new java.awt.Font("Microsoft Sans Serif", 0, 14));
 
@@ -113,6 +153,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel4.setText("จำนวนสินค้า");
+
+        txtProductName.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
 
         txtPrice.setText("0");
         txtPrice.setActionCommand("<Not Set>");
@@ -168,17 +210,15 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(37, 37, 37)
-                                .addComponent(jTextField1))
+                                .addComponent(txtCompany))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel9))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField2)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                    .addComponent(txtProductName)
+                                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -222,14 +262,14 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtCompany, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6)
                             .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel3))
@@ -243,7 +283,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(btnSave)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
 
         pack();
@@ -263,6 +303,28 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
+           try
+        {
+            MainFrame MainFrame = new MainFrame();
+            
+            Connection conn = MainFrame.getMySqlConnection();
+                     
+                JOptionPane.showMessageDialog(this, "Save complete!");
+           
+        
+            txtProductName.setText("");
+   
+            conn.close();
+            
+        }
+           
+           catch(Exception ex)
+        {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Something went wrong");
+        }
+       
+  
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
@@ -298,10 +360,8 @@ public class MainFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new MainFrame().setVisible(true);
         });
     }
 
@@ -320,12 +380,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JLabel lblGithub;
     private javax.swing.JLabel lblHeader;
     private javax.swing.JSpinner spnQua;
+    private javax.swing.JTextField txtCompany;
     private javax.swing.JTextField txtPrice;
+    private javax.swing.JTextField txtProductName;
     // End of variables declaration//GEN-END:variables
 }
