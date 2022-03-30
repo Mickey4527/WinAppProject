@@ -10,18 +10,24 @@ package WinApp;
  */
 public class SaveInfo {
      private double price;
+     private int stock;
     
     public void setPrice(double price)
     {
         this.price = price;
     }
     
-    public double calVat()
+    public void setStock(int stock)
     {
-        double vat;
-        vat = price + (price * 7/100);
+        this.stock = stock;
+    }
+     
+    public double calSumProduct()
+    {
+        double sum;
+        sum = price * stock;
         
-        return vat;
+        return sum;
     }
 }
 
