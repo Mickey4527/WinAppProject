@@ -3,12 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package WinApp;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
@@ -38,7 +39,7 @@ public class MainFrame extends javax.swing.JFrame {
             Class.forName("com.mysql.cj.jdbc.Driver");
             
             /* Create connection url. */
-            String mysqlConnUrl = "jdbc:mysql://localhost:3306/test";
+            String mysqlConnUrl = "jdbc:mysql://localhost:3306/wm_db";
             
             /* db user name. */
             String mysqlUserName = "root";
@@ -222,6 +223,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(lblGithub)
                                 .addGap(19, 19, 19))
                             .addGroup(layout.createSequentialGroup()
@@ -303,25 +305,44 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
-           try
+        try
         {
             MainFrame MainFrame = new MainFrame();
             
-            Connection conn = MainFrame.getMySqlConnection();
-                     
-                JOptionPane.showMessageDialog(this, "Save complete!");
-           
-        
-            txtProductName.setText("");
-   
-            conn.close();
+            try (Connection conn = MainFrame.getMySqlConnection()) {
+                
+                if(conn != null){
+                    double price;
+                    
+                    Statement stmt = conn.createStatement();
+                    
+                    price = Double.parseDouble(txtPrice.getText());
+                    
+                    String sql = "INSERT INTO Info_Product (Name, Company, A, B, Price, Qua, More) "
+                            + "VALUES ( '"+ txtProductName.getText() +"', '"+txtCompany.getText()+"', 'kg', 'bye', '"+price+"', '"+spnQua.getValue()+"', '')";
+                    stmt.execute(sql);
+                   
+                    JOptionPane.showMessageDialog(this, "Save complete!");
+                       
+                    txtProductName.setText("");
+                    
+                  
+                    
+                }
+                   
+                else{
+                       
+                    JOptionPane.showMessageDialog(this, "Server connection failed", "alert", JOptionPane.ERROR_MESSAGE);
+                       
+                }  
+            }
             
         }
            
-           catch(Exception ex)
+        catch(SQLException ex)
         {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Something went wrong");
+      
         }
        
   
