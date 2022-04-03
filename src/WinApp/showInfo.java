@@ -7,15 +7,15 @@ package WinApp;
 public class showInfo {
     private int qua;
     private double price;
-    private String name, company, type, b, more, date;
+    private String name, company, type, counter, more, date;
     
     
-    public showInfo(String date, String name, String company, String type, String b, int qua ,double price, String more)
+    public showInfo(String date, String name, String company, String type, String counter, int qua ,double price, String more)
     {
         this.name = name;
         this.company = company;
         this.type = type;
-        this.b = b;
+        this.counter = counter;
         this.more = more;
         this.date = date;
         this.qua = qua;
@@ -37,8 +37,8 @@ public class showInfo {
         return type;
     }
     
-    public String getB(){
-        return b;
+    public String getCounter(){
+        return counter;
     }
     public double getPrice(){
         return price;

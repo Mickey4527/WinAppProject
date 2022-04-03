@@ -9,7 +9,7 @@ package WinApp;
  * @author mix_z
  */
 public class SaveInfo {
-     private double price;
+       private double price;
      private int stock;
     
     public void setPrice(double price)
@@ -30,16 +30,3 @@ public class SaveInfo {
         return sum;
     }
 }
-
- // SaveInfo info = new SaveInfo();
-       // double price = Double.parseDouble(txtPrice.getText());
-        
-       // if(chkVat.isSelected())
-       //{
-       //     info.setPrice(price);  
-        //    JOptionPane.showMessageDialog(this, info.calVat());
-       // }
-       // else
-        //{
-        //    JOptionPane.showMessageDialog(this, price);
-        //}
