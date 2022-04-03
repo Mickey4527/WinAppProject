@@ -10,11 +10,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author mix_z
- */
+
+
+
 public class MainFrame extends javax.swing.JFrame {
 
     /**
@@ -25,41 +28,68 @@ public class MainFrame extends javax.swing.JFrame {
     
     public MainFrame() {   
         initComponents();
+        show_user();
     }
-
-    public Connection getMySqlConnection()
-    {
-        /* Declare and initialize a sql Connection variable. */
-        Connection ret = null;
+    
+    
+    public ArrayList<showInfo> UserList(){
         
-        try
-        {
+        ArrayList<showInfo> userlist = new ArrayList<>();
         
-            /* Register for jdbc driver class. */
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        try{
             
-            /* Create connection url. */
+            Class.forName("com.mysql.cj.jdbc.Driver");   
             String mysqlConnUrl = "jdbc:mysql://localhost:3306/wm_db";
-            
-            /* db user name. */
             String mysqlUserName = "root";
-            
-            /* db password. */
+
             String mysqlPassword = "";
             
-            /* Get the Connection object. */
-            ret = DriverManager.getConnection(mysqlConnUrl, mysqlUserName , mysqlPassword);
+            Connection conn = DriverManager.getConnection(mysqlConnUrl, mysqlUserName , mysqlPassword);
             
-           
-   
-        }catch(Exception ex)
+            String query = "SELECT * FROM Info_Product";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            
+            showInfo showinfo;
+            while(rs.next()){
+                showinfo = new showInfo(rs.getString("Date"),rs.getString("Name"), rs.getString("Company"), rs.getString("Type"), rs.getString("B"), (int) rs.getDouble("Price"), rs.getInt("Qua"),rs.getString("More"));
+                userlist.add(showinfo);
+            }
+        }
+        
+        catch(SQLException ex)
         {
-            ex.printStackTrace();
-        }finally
-        {
-            return ret;
+            JOptionPane.showMessageDialog(null, ex);
+      
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return userlist;
+    }
+    
+    public void show_user(){
+        
+        ArrayList<showInfo> list = UserList();
+        DefaultTableModel model = (DefaultTableModel) jTable_ShowInfo.getModel();
+        
+        Object[] row = new Object[8];
+        
+        for(int i = 0; i < list.size(); i++){
+            row[0] = list.get(i).getDate();
+            row[1] = list.get(i).getType();
+            row[2] = list.get(i).getName();
+            row[3] = list.get(i).getCompany();
+            row[4] = list.get(i).getB();
+            row[5] = list.get(i).getQua();
+            row[6] = list.get(i).getPrice();
+            row[7] = list.get(i).getMore();
+            
+            model.addRow(row);
         }
     }
+
+    
      
     /**
      * This method is called from within the constructor to initialize the form.
@@ -73,24 +103,26 @@ public class MainFrame extends javax.swing.JFrame {
         lblHeader = new javax.swing.JLabel();
         lblGithub = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         spnQua = new javax.swing.JSpinner();
         jLabel4 = new javax.swing.JLabel();
         txtCompany = new javax.swing.JTextField();
         txtProductName = new javax.swing.JTextField();
         txtPrice = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        lblNameProduct = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cmbType = new javax.swing.JComboBox<>();
         jComboBox2 = new javax.swing.JComboBox<>();
-        jSpinner1 = new javax.swing.JSpinner();
+        spnDate = new javax.swing.JSpinner();
         jLabel9 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        txtMore = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable_ShowInfo = new javax.swing.JTable();
+        btnRefresh = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Hello World");
@@ -108,6 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnSave.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Save-icon.png"))); // NOI18N
         btnSave.setText("บันทึกข้อมูล");
         btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -120,33 +153,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "วันที่บันทึก", "ประเภทสินค้า", "ชื่อสินค้า", "ยี่ห้อ", "หน่วยนับ", "จำนวนสินค้า", "ราคา", "หมายเหตุ"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Float.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jTable1.setEnabled(false);
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(6).setResizable(false);
-        }
-        jTable1.getTableHeader().setFont(new java.awt.Font("Microsoft Sans Serif", 0, 14));
-
         jLabel1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel1.setText("ราคาสินค้า");
 
@@ -155,13 +161,15 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel4.setText("จำนวนสินค้า");
 
+        txtCompany.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+
         txtProductName.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
 
         txtPrice.setText("0");
         txtPrice.setActionCommand("<Not Set>");
 
-        jLabel2.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel2.setText("ชื่อสินค้า");
+        lblNameProduct.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        lblNameProduct.setText("ชื่อสินค้า");
 
         jLabel3.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel3.setText("ยี่ห้อ");
@@ -172,20 +180,53 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel8.setText("ประเภทสินค้า");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbType.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        cmbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ไม่มี", "Item 2", "Item 3", "Item 4" }));
 
+        jComboBox2.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jSpinner1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel());
-        jSpinner1.setEnabled(false);
-        jSpinner1.setInheritsPopupMenu(true);
+        spnDate.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        spnDate.setModel(new javax.swing.SpinnerDateModel());
+        spnDate.setEnabled(false);
+        spnDate.setInheritsPopupMenu(true);
 
         jLabel9.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel9.setText("บันทึกวันที่");
 
         jLabel6.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel6.setText("หมายเหตุ");
+
+        txtMore.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+
+        jTable_ShowInfo.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        jTable_ShowInfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "วัน/เดือน/ปี", "ประเภทสินค้า", "ชื่อสินค้า", "ยี่ห้อ", "หน่วยนับ", "จำนวนสินค้า", "ราคา", "หมายเหตุ"
+            }
+        ));
+        jTable_ShowInfo.setEnabled(false);
+        jScrollPane2.setViewportView(jTable_ShowInfo);
+        jTable_ShowInfo.getTableHeader().setFont(new java.awt.Font("Microsoft Sans Serif", 0, 14));
+
+        btnRefresh.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
+        btnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Button-Refresh-icon (1).png"))); // NOI18N
+        btnRefresh.setText("รีเฟรช");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -214,16 +255,18 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(txtCompany))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
+                                    .addComponent(lblNameProduct)
                                     .addComponent(jLabel9))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtProductName)
-                                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(spnDate, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblGithub)
                                 .addGap(19, 19, 19))
                             .addGroup(layout.createSequentialGroup()
@@ -233,19 +276,20 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cmbType, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(27, 27, 27)
                                         .addComponent(jLabel5)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jTextField3))
+                                    .addComponent(txtMore))
                                 .addGap(125, 125, 125))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(btnSave))
-                            .addComponent(jScrollPane1))
+                                .addComponent(btnRefresh)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnSave)))
                         .addGap(37, 37, 37))))
         );
         layout.setVerticalGroup(
@@ -253,27 +297,29 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblHeader)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblHeader)
+                        .addComponent(jButton1))
                     .addComponent(lblGithub, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(spnDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
+                            .addComponent(lblNameProduct)
                             .addComponent(txtProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtCompany, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtMore, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -282,10 +328,15 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(spnQua, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSave)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnSave)
+                        .addGap(18, 18, 18))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnRefresh)
+                        .addGap(6, 6, 6)))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(93, Short.MAX_VALUE))
         );
 
         pack();
@@ -307,42 +358,40 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         try
         {
-            MainFrame MainFrame = new MainFrame();
+            double price;
             
-            try (Connection conn = MainFrame.getMySqlConnection()) {
-                
-                if(conn != null){
-                    double price;
-                    
-                    Statement stmt = conn.createStatement();
-                    
-                    price = Double.parseDouble(txtPrice.getText());
-                    
-                    String sql = "INSERT INTO Info_Product (Name, Company, A, B, Price, Qua, More) "
-                            + "VALUES ( '"+ txtProductName.getText() +"', '"+txtCompany.getText()+"', 'kg', 'bye', '"+price+"', '"+spnQua.getValue()+"', '')";
-                    stmt.execute(sql);
-                   
-                    JOptionPane.showMessageDialog(this, "Save complete!");
-                       
-                    txtProductName.setText("");
-                    
-                  
-                    
-                }
-                   
-                else{
-                       
-                    JOptionPane.showMessageDialog(this, "Server connection failed", "alert", JOptionPane.ERROR_MESSAGE);
-                       
-                }  
-            }
+            Class.forName("com.mysql.cj.jdbc.Driver");   
+            String mysqlConnUrl = "jdbc:mysql://localhost:3306/wm_db";
+            String mysqlUserName = "root";
+
+            String mysqlPassword = "";
             
+            Connection conn = DriverManager.getConnection(mysqlConnUrl, mysqlUserName , mysqlPassword);
+            Statement stmt = conn.createStatement();    
+                                         
+            price = Double.parseDouble(txtPrice.getText());
+                    
+            String sql = "INSERT INTO Info_Product (Date ,Name, Company, Type, B, Price, Qua, More) "
+                            + "VALUES ( '"+ spnDate.getValue() +"','"+ txtProductName.getText() +"', '"+txtCompany.getText()+"', "
+                            + "'"+ cmbType.getSelectedItem() +"', '"+ cmbType.getSelectedItem() +"', '"+price+"', '"+spnQua.getValue()+"', '"+ txtMore.getText() +"')";
+            stmt.execute(sql);
+                   
+            JOptionPane.showMessageDialog(this, "Save complete!");
+   
+            txtProductName.setText("");
+                    
+            DefaultTableModel model = (DefaultTableModel) jTable_ShowInfo.getModel();
+            model.setRowCount(0);
+            show_user();
+                        
         }
            
         catch(SQLException ex)
         {
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, ex);
       
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
        
   
@@ -352,6 +401,19 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         
     }//GEN-LAST:event_btnSaveMouseClicked
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+         DefaultTableModel model = (DefaultTableModel) jTable_ShowInfo.getModel();
+         model.setRowCount(0);
+         show_user();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Config config = new Config();
+        config.show();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -387,25 +449,27 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSave;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cmbType;
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable_ShowInfo;
     private javax.swing.JLabel lblGithub;
     private javax.swing.JLabel lblHeader;
+    private javax.swing.JLabel lblNameProduct;
+    private javax.swing.JSpinner spnDate;
     private javax.swing.JSpinner spnQua;
     private javax.swing.JTextField txtCompany;
+    private javax.swing.JTextField txtMore;
     private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtProductName;
     // End of variables declaration//GEN-END:variables
