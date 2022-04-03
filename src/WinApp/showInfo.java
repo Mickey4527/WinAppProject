@@ -10,7 +10,7 @@ public class showInfo {
     private String name, company, type, counter, more, date;
     
     
-    public showInfo(String date, String name, String company, String type, String counter, int qua ,double price, String more)
+    public showInfo(String date, String name, String company, String type, String counter, double price , int qua, String more)
     {
         this.name = name;
         this.company = company;

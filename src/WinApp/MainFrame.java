@@ -64,7 +64,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             showInfo showinfo;
             while(rs.next()){
-                showinfo = new showInfo(rs.getString("Date"),rs.getString("Name"), rs.getString("Company"), rs.getString("Type"), rs.getString("Counter"), (int) rs.getDouble("Price"), rs.getInt("Qua"),rs.getString("More"));
+                showinfo = new showInfo(rs.getString("Date"),rs.getString("Name"), rs.getString("Company"), rs.getString("Type"), rs.getString("Counter"), rs.getDouble("Price"), rs.getInt("Qua"),rs.getString("More"));
                 userlist.add(showinfo);
             }
         }
